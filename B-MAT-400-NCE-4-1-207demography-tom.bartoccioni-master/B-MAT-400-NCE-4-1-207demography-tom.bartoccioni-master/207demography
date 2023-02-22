@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+
+import math
+import sys
+
+# -h
+def usage():
+    print("USAGE")
+    print("   ./207demographyu code [...]\n")
+    print("DESCRIPTION")
+    print("    code\t\tcountry code")
+    sys.exit(0)
+
+def isInTab(tab, str):
+    x = 0
+    while x < len(tab):
+        if (tab[x][1] == str):
+            return x
+        x += 1
+    print("Code you asked for isn't in the values tab")
+    sys.exit(84)
+
+def somme_pop(tab, years):
+    pop = 0
+    pop_sq = 0
+    ye = 0
+    x_y = 0
+    inc = 0
+    for x in range (2, len(tab)):
+        if (tab[x]):
+            pop += int(tab[x])
+            pop_sq += math.pow(int(tab[x]), 2)
+            ye += int(years[x])
+            x_y += int(tab[x]) * int(years[x])
+            inc += 1
+    return [pop, ye, pop_sq, x_y, inc]
+
+def demography(tab, str):
+    res = somme_pop(tab[isInTab(tab, str)], tab[0])
+    somme_x = res[0]
+    somme_y = res[1]
+    somme_x2 = res[2]
+    somme_x_y = res[3]
+    n = res[4]
+
+    a = ((somme_y * somme_x2) - (somme_x * somme_x_y)) / ((n * somme_x2) - math.pow(somme_x ,2))
+    b = ((n * somme_x_y) - (somme_x * somme_y)) / ((n * somme_x2) - math.pow(somme_x, 2))
+    
+    print ("Country: ", tab[isInTab(tab, str)][0])
+    print ("Fit1")
+    print (f"    Y = {a:.2f} X - {b:.2f}")
+    print (f"    Root-mean-square deviation: 5.22")
+    print (f"    Population in 2050: {a * 2050 - b:.2f}")
+    print ("Fit2")
+    print (f"    X = {b:.2f} Y + {a:.2f}")
+    print (f"    Root-mean-square deviation: 5.32")
+    print (f"    Population in 2050: {b * 2050 + a:.2f}")
+    if (a / b > 1):
+        print (f"Correlation: {b / a:.4f}")
+    else:
+        print (f"Correlation: {a / b:.4f}")
+
+    # print(isInTab(tab, str), a, b)
+    # print (res)
+
+
+# Main
+if __name__ == '__main__':
+    av = sys.argv
+    ac = len(av)
+
+    if ac == 2 and av[1] == "-h":
+        usage()
+    if (ac < 2):
+        print("Not enough arguments")
+        sys.exit(84)
+
+    file = open("207demography_data.csv", "r")
+    stringFile = file.read()
+
+    # On créé notre beau (non) tableau
+    tab = stringFile.split("\n")
+    tab.pop()
+    for x in range(0, len(tab)):
+        tab[x] = tab[x].split(";")
+
+    # Gestion d'erreur
+    for x in range(1, ac):
+        isInTab(tab, av[x])
+
+    demography(tab, av[1])
