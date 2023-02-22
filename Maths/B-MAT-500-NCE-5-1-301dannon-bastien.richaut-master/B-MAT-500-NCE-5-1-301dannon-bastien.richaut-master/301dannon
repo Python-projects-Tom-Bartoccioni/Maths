@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+
+from io import StringIO
+import math
+import sys
+import os
+
+sys.setrecursionlimit(10**6)
+
+# -h
+def usage():
+    print("USAGE")
+    print("   ./301dannon file")
+    print("DESCRIPTION")
+    print("    file\tfile that contains the numbers to be sorted, separated by spaces")
+    sys.exit(0)
+
+def selection_sort(tab):
+    final = []
+    i = 0
+
+    while tab:
+        i -= 1
+        min = 0
+        for j in range(0, len(tab)):
+            if (float(tab[j]) < float(tab[min])):
+                min = j
+            i += 1
+        final.append(tab[min])
+        tab.pop(min)
+
+    # print (final, i)
+    return (i)
+
+def insertion_sort(tab):
+    ctn = 0
+    for i in range (1, len(tab)):
+        tmp = tab[i]
+        j = i - 1
+        while j >= 0:
+            ctn += 1
+            if (tab[j] <= tmp):
+                tab[j + 1] = tab[j]
+                j -= 1
+            else:
+                break
+        tab[j + 1] = tmp
+
+    # print (tab, ctn)
+    return (ctn)
+
+def bubble_sort(tab):
+    final = tab.copy()
+    final.sort()
+
+    cmp = 0
+    for j in range(0, len(tab) - 1):
+        for i in range(0, len(tab) - 1 - j):
+            if (tab[i] > tab[i + 1]):
+                tmp = tab[i + 1]
+                tab[i + 1] = tab[i]
+                tab[i] = tmp
+            cmp += 1
+
+    # print (tab, cmp)
+    return (cmp)
+
+def quicksort(tab):
+    ctn = 0
+    left = []
+    right = []
+
+    if (len(tab) == 0):
+        return ([tab, ctn])
+
+    piv = tab[0]
+    for i in range (1, len(tab)):
+        ctn += 1
+        if (tab[i] > piv):
+            right.append(tab[i])
+        else:
+            left.append(tab[i])
+
+    ll = quicksort(left)
+    rr = quicksort(right)
+    final = ll[0] + [piv] + rr[0]
+    ctnf = ll[1] + ctn + rr[1]
+
+    return ([final, ctnf])
+
+def merge_sort(tab):
+    ctn = 0
+
+    if (len(tab) == 1):
+        return ([tab], ctn + 1)
+
+    left = tab[:len(tab) // 2]
+    right = tab[len(tab) // 2:]
+    
+    ll = merge_sort(left)
+    rr = merge_sort(right)
+    ctn = ctn + ll[1] + rr[1]
+
+    zz = rr[0] + ll[0]
+    zz.sort()
+    return (zz, ctn)
+    # if (ll[0] < rr[0]):
+    #     return (ll + rr)
+    # else:
+    #     return (rr + ll)
+
+
+# Main function
+def dannon(tab):
+    if (len(tab) == 1):
+        print ("1 element")
+    else:
+        print (len(tab), "elements")
+    print ("Selection sort:", selection_sort(tab.copy()), "comparisons")
+    print ("Insertion sort:", insertion_sort(tab.copy()), "comparisons")
+    print ("Bubble sort:", bubble_sort(tab.copy()), "comparisons")
+    tt = quicksort(tab.copy())
+    print ("Quicksort:", tt[1], "comparisons")
+    zz = merge_sort(tab.copy())
+    if (len(tab) == 1):
+        print ("Merge sort: 0 comparisons")
+    else:
+        print ("Merge sort: ", zz[1], " comparisons")
+
+# Main
+if __name__ == '__main__':
+    av = sys.argv
+    ac = len(av)
+
+    if ac == 2 and av[1] == "-h":
+        usage()
+    if (ac == 1):
+        print ("No arguments")
+        sys.exit(84)
+    if (ac > 2):
+        print ("Too many arguments")
+        sys.exit(84)
+
+    if (os.stat(av[1]).st_size) == 0:
+        print ("File is empty")
+        sys.exit(84)
+
+    file = open(av[1], "rt")
+    fileString =  file.readline()
+    fileTab = fileString.split()
+    list = list(map(str, fileTab))
+    try:
+        for i in range (0, len(list)):
+            if (isinstance(list[i], int) or isinstance(list[i], float)):
+                sys.exit(84)
+            else:
+                list[i] = float(list[i])
+    except:
+        print ("Your file must be full of integers")
+        sys.exit(84)
+
+    dannon(list)

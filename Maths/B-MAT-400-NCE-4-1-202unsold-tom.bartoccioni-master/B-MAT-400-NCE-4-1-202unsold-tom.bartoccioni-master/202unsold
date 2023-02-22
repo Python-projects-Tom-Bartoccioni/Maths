@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+
+import math
+import sys
+
+# program
+
+def unsold(a, b):
+
+    # part 1
+
+    print("------------------------------------------------------------------------")
+
+    print("\tX=10\tX=20\tX=30\tX=40\tX=50\tY law")
+
+    total = 0
+    All_X = [0] * 6
+    All_Y = [0] * 6
+
+    for y in range(1,6):
+        print(f"Y={y*10}", end='')
+        for x in range(1,6):
+            result = ((a - (x * 10)) * (b - (y * 10))) / ((5 * a - 150) * (5 * b - 150))
+            All_Y[y] += result
+            total += result
+            print(f"\t{result:.3f}", end='')
+        print(f"\t{All_Y[y]:.3f}")
+    print("X law", end='')
+
+    for x in range(1,6):
+        for y in range(1,6):
+            result = ((a - (x * 10)) * (b - (y * 10))) / ((5 * a - 150) * (5 * b - 150))
+            All_X[x] += result        
+        print(f"\t{All_X[x]:.3f}", end='')
+    print(f"\t{total:.3f}")
+
+    # part 2
+
+    print("------------------------------------------------------------------------")
+
+    print ("z\t20\t30\t40\t50\t60\t70\t80\t90\t100")
+
+    print("p(Z=z)", end='')
+
+    for z in range(2,11):
+        Zlaw = 0
+        for y in range(1,6):
+            for x in range(1,6):
+                result = ((a - (x * 10)) * (b - (y * 10))) / ((5 * a - 150) * (5 * b - 150))
+                if z == x + y:
+                    Zlaw += result
+        print(f"\t{Zlaw:.3f}", end='')
+
+    # part 3
+
+    print("\n------------------------------------------------------------------------")
+
+    esp_x = 0
+    esp_y = 0
+    var_x = 0
+    var_y = 0
+
+    for x in range(1,6):
+        esp_x += x * 10 * All_X[x]
+        esp_y += x * 10 * All_Y[x]
+
+    for x in range(1,6):
+        var_x += math.pow((x * 10 - esp_x), 2) * All_X[x]
+        var_y += math.pow((x * 10 - esp_y), 2) * All_Y[x]
+
+    print(f"expected value of X:\t{esp_x:.1f}")
+    print(f"variance of X:\t\t{var_x:.1f}")
+    print(f"expected value of Y:\t{esp_y:.1f}")
+    print(f"variance of Y:\t\t{var_y:.1f}")
+    print(f"expected value of Z:\t{esp_x + esp_y:.1f}")
+    print(f"variance of Z:\t\t{var_x + var_y:.1f}")
+
+    print("------------------------------------------------------------------------")
+
+# -h
+def usage():
+    print("USAGE")
+    print("   ./202unsold a b\n")
+    print("DESCRIPTION")
+    print("    a       constant computed from past results")
+    print("    b       constant computed from past results")
+    sys.exit(0)
+
+# main
+
+if __name__ == '__main__':
+    av = sys.argv
+    ac = len(av)
+
+    if ac == 2 and av[1] == "-h":
+        usage()
+    if (ac >= 4):
+        print("Too many arguments")
+        sys.exit(84)
+    if (ac <= 2):
+        print("Not enough arguments")
+        sys.exit(84)
+    try:
+        a = int(av[1])
+        b = int(av[2])
+    except ValueError:
+        print("All arguments needs to be numbers.")
+        sys.exit(84)
+    if (int(av[1]) <= 50 or int(av[2]) <= 50):
+        print("Numbers have to be suprior than 50")
+        sys.exit(84)
+    unsold(a, b)

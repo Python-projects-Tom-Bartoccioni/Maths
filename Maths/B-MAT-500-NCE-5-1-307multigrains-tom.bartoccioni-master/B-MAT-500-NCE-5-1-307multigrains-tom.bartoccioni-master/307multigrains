@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+
+from io import StringIO
+import math
+import sys
+import os
+from typing import IO
+
+ro = [1, 1, 2, 0]
+rw = [0, 2, 1, 0]
+rc = [1, 0, 0, 3]
+rb = [0, 1, 1, 1]
+rs = [2, 0, 0, 2]
+rt = [ro, rw, rc, rb, rs]
+
+# -h
+def usage():
+    print("USAGE")
+    print("   ./307multigrains n1 n2 n3 n4 po pw pc pb ps")
+    print("DESCRIPTION")
+    print("    n1\tnumber of tons of fertilizer F1")
+    print("    n2\tnumber of tons of fertilizer F2")
+    print("    n3\tnumber of tons of fertilizer F3")
+    print("    n4\tnumber of tons of fertilizer F4")
+    print("    po\tprice of one unit of oat")
+    print("    pw\tprice of one unit of wheat")
+    print("    pc\tprice of one unit of corn")
+    print("    pb\tprice of one unit of barley")
+    print("    ps\tprice of one unit of soy")
+    sys.exit(0)
+
+# Make max (non opti for max rentabilité)
+def makemax(fert, prices):
+    print(f"Resources: {fert[0]} F1, {fert[1]} F2, {fert[2]} F3, {fert[3]} F4\n")
+    #print(fert, prices)
+    #print(prices.index(max(prices)))
+    tmp = [1, 1, 1, 1, 1]
+    fin = [0, 0, 0, 0, 0]
+
+    for i in range(0, 10):
+        for i in range(0, 5):
+            tmp[i] = howican(fert, i)
+            #print (tmp[i])
+        for j in range(0, 4):
+            fert[j] -= tmp[j] * rt[tmp.index(max(tmp))][j]
+        #print (fert)
+        fin[tmp.index(max(tmp))] = max(tmp)
+    #prints(fert, [0, 20.00, 8.50, 1.00, 18.25], prices)
+    #prints(fert, [0, 10.00, 0, 0, 0], prices)
+    prints(fin, prices)
+
+# Faire en sorte qu'il fasse le max du truc le plus rentable puis le max du 2e truc le plus rentable etc
+def howican(fert, element):
+    how = [0, 0, 0, 0]
+    for i in range (0, 4):
+        if (rt[element][i] == 0):
+            how[i] = 999999;
+        else:
+            how[i] = fert[i] / rt[element][i]
+    return(min(how))
+
+# Prints
+def prints(units, prices):
+    if (units[0] == 0):
+        print(f"Oat: {units[0]:.0f} units at ${prices[0]}/unit")
+    else:
+        print(f"Oat: {units[0]:.2f} units at ${prices[0]}/unit")
+    if (units[1] == 0):
+        print(f"Wheat: {units[1]:.0f} units at ${prices[1]}/unit")
+    else:
+        print(f"Wheat: {units[1]:.2f} units at ${prices[1]}/unit")
+    if (units[2] == 0):
+        print(f"Corn: {units[2]:.0f} units at ${prices[2]}/unit")
+    else:
+        print(f"Corn: {units[2]:.2f} units at ${prices[2]}/unit")
+    if (units[3] == 0):
+        print(f"Barley: {units[3]:.0f} units at ${prices[3]}/unit")
+    else:
+        print(f"Barley: {units[3]:.2f} units at ${prices[3]}/unit")
+    if (units[4] == 0):
+        print(f"Soy: {units[4]:.0f} units at ${prices[4]}/unit\n")
+    else:
+        print(f"Soy: {units[4]:.2f} units at ${prices[4]}/unit\n")
+
+    total = units[0] * prices[0] + units[1] * prices[1] + units[2] * prices[2] + units[3] * prices[3] + units[4] * prices[4]
+    print(f"Total production value: ${total:.2f}")
+
+# Main
+if __name__ == '__main__':
+    av = sys.argv
+    ac = len(av)
+
+    if ac == 2 and av[1] == "-h":
+        usage()
+    if (ac < 10):
+        print("No arguments")
+        sys.exit(84)
+    if (ac > 10):
+        print("Too many arguments")
+        sys.exit(84)
+
+    try:
+        f1 = int(av[1])
+        f2 = int(av[2])
+        f3 = int(av[3])
+        f4 = int(av[4])
+        
+        po = int(av[5])
+        pw = int(av[6])
+        pc = int(av[7])
+        pb = int(av[8])
+        ps = int(av[9])
+
+        if (f1 < 0 or f2 < 0 or f3 < 0 or f4 < 0 or po < 0 or pw < 0 or pc < 0 or pb < 0 or ps < 0):
+            print("All args must be positive")
+            sys.exit(84)
+    except ValueError:
+        print("All args needs to be ints")
+        sys.exit(84)
+
+    makemax([f1, f2, f3, f4], [po, pw, pc, pb, ps])
